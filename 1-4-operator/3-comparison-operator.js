@@ -31,15 +31,3 @@ console.log('z' < '가');
 
 //         97 99    97 100
 console.log('ace' < 'ade');
-
-
-
-
-
-
-
-
-
-
-
-
