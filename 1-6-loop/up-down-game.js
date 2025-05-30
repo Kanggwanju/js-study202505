@@ -11,24 +11,51 @@
 
 //========== v1.2 시나리오 =================
 // 사용자는 게임 시작전에 난이도를 설정할 수 있다.
-// 난이도는 상, 중, 하 난이도가 존재하며 난이도별 입력 횟수제한이 다르다.
+// 난이도는 상(3자리수, 20회), 중(2자리수, 10회), 하(1자리수, 5회) 난이도가 존재하며 난이도별 입력 횟수제한이 다르다.
+
 
 // 선택한 숫자
-let selectedNumber = '';
+let selectedNumber = 0;
 
 // 1 ~ 100, 랜덤 번호
-let x = 1;
-let y = 100;
-let randomNumber = Math.floor(Math.random() * (y - x + 1)) + x;
+let minNumber = 1;
+let maxNumber;
+let randomNumber;
 
 // 제한 횟수
-let count = 5;
-let i = 1;
+let maxAttempts;
+let attempt = 1;
+
+// 선택한 레벨
+let selectedLevel = '';
 
 while (true) {
-  if (i < count) {
-    selectedNumber = +prompt('숫자를 입력하세요! [ 1 ~ 100 ]');
-    if (selectedNumber >= 1 && selectedNumber <= 100) {
+  selectedLevel = prompt(`~~~~~ 난이도 설정 ~~~~~\n[ 1. 상 (3자리수) | 2. 중 (2자리수) | 3. 하 (1자리수)] `);
+  if (selectedLevel === '상' || +selectedLevel === 1) {
+    alert('난이도가 1. 상으로 선택되었습니다.');
+    maxNumber = 1000;
+    maxAttempts = 20;
+    break;
+  } else if (selectedLevel === '중' || +selectedLevel === 2) {
+    alert('난이도가 2. 중으로 선택되었습니다.');
+    maxNumber = 100;
+    maxAttempts = 10;
+    break;
+  } else if (selectedLevel === '하' || +selectedLevel === 3) {
+    alert('난이도가 3. 하으로 선택되었습니다.');
+    maxNumber = 10;
+    maxAttempts = 5;
+    break;
+  } else {
+    alert('정해진 난이도 중에 선택해 주세요');
+  }
+}
+randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
+alert(`난이도가 ${maxNumber}가 되었습니다.`);
+while (true) {
+  if (attempt < maxAttempts) {
+    selectedNumber = +prompt(`숫자를 입력하세요! [ ${minNumber} ~ ${maxNumber} ]`);
+    if (selectedNumber >= minNumber && selectedNumber <= maxNumber) {
       if (selectedNumber < randomNumber) {
         alert('UP!!');
       } else if (selectedNumber > randomNumber) {
@@ -39,15 +66,15 @@ while (true) {
       }
     } else {
       alert('범위에 맞는 값을 입력해주세요!');
-      if (i === 1) { i = 0; }
-      else i--;
+      if (attempt === 1) { attempt = 0; }
+      else attempt--;
     }
   } else {
     alert(`기회가 모두 소진되었습니다. 정답은 ${selectedNumber}이었지롱~ ㅋㅋ`);
     break;
   }
-  alert(`${count - i}번의 기회가 남았습니다.`);
-  i++;
+  alert(`${maxAttempts - attempt}번의 기회가 남았습니다.`);
+  attempt++;
 }
 
 
