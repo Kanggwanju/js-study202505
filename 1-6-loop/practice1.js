@@ -1,9 +1,16 @@
+
 // 1. 10안에 있는 2의 배수를 가로로 출력하기
 let resultString = '';
-for (let i = '2'; i <= 10; i= parseInt(i) + 2) {
-  resultString = resultString + i + ' ';
+
+for (let i = 2; i <= 10; i+=2) {
+  resultString += `${i} `;
 }
-console.log(a);
+
+// 내가 쓴 for문
+/*for (let i = '2'; i <= 10; i= parseInt(i) + 2) {
+  resultString = resultString + i + ' ';
+}*/
+console.log(resultString);
 console.log('==============================');
 
 // 2. 1~50 사이 6의 배수 출력하기
