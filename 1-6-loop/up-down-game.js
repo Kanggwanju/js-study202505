@@ -15,11 +15,44 @@
 
 // 선택한 숫자
 let selectedNumber = '';
+
 // 1 ~ 100, 랜덤 번호
 let x = 1;
 let y = 100;
-let ramdomNumber = Math.floor(Math.random() * (y - x + 1)) + x;
+let randomNumber = Math.floor(Math.random() * (y - x + 1)) + x;
+
+// 제한 횟수
+let count = 5;
+let i = 1;
+
 while (true) {
+  if (i < count) {
+    selectedNumber = +prompt('숫자를 입력하세요! [ 1 ~ 100 ]');
+    if (selectedNumber >= 1 && selectedNumber <= 100) {
+      if (selectedNumber < randomNumber) {
+        alert('UP!!');
+      } else if (selectedNumber > randomNumber) {
+        alert('DOWN!!');
+      } else if (selectedNumber === randomNumber) {
+        alert('정답입니다!');
+        break;
+      }
+    } else {
+      alert('범위에 맞는 값을 입력해주세요!');
+      if (i === 1) { i = 0; }
+      else i--;
+    }
+  } else {
+    alert(`기회가 모두 소진되었습니다. 정답은 ${selectedNumber}이었지롱~ ㅋㅋ`);
+    break;
+  }
+  alert(`${count - i}번의 기회가 남았습니다.`);
+  i++;
+}
+
+
+
+/*while (true) {
   selectedNumber = +prompt('숫자를 입력하세요! [ 1 ~ 100 ]');
   if (selectedNumber >= 1 && selectedNumber <= 100) {
     if (selectedNumber < ramdomNumber) {
@@ -34,7 +67,7 @@ while (true) {
   else {
     alert('범위에 맞는 값을 입력해주세요!');
   }
-}
+}*/
 
 
 
