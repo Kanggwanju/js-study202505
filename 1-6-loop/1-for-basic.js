@@ -17,6 +17,11 @@ console.log("반복문 종료!");
 for (let gogo=1; gogo<=9; gogo++) {
   console.log(`${level} * ${gogo} = ${level * gogo}`);
 }*/
+// 구구단 3단 출력
+let level = 3;
+for (let line = 1; line <= 9; line++) {
+  console.log(`${level} x ${line} = ${level * line}`);
+}
 // 변수값 swap
 let x = 10;
 let y = 20;
