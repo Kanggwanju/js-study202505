@@ -31,6 +31,7 @@
 
 let randomNum1;
 let randomNum2;
+let temp;
 let maxNum;
 let minNum;
 let answer;
@@ -38,27 +39,55 @@ let correctAnswer;
 let questionNum = 1;
 let correctNum = 0;
 let wrongNum = 0;
+let operation;
 // Math.floor(Math.random()*(maxNum - minNum) + minNum);
 while (true) {
     maxNum = 10;
     minNum = 1;
     randomNum1 = Math.floor(Math.random()*(maxNum - minNum) + minNum);
     randomNum2 = Math.floor(Math.random()*(maxNum - minNum) + minNum);
-    correctAnswer = randomNum1 + randomNum2;
-    answer = +prompt(`Q${questionNum}. ${randomNum1} + ${randomNum2} = ??`);
-    if (answer === 0) {
+    if (randomNum2 >= randomNum1) {
+        temp = randomNum1;
+        randomNum1 = randomNum2;
+        randomNum2 = temp;
+    }
+
+    operation = Math.floor(Math.random()*(4 - 1) + 1);
+
+    if (operation === 1) {
+        correctAnswer = randomNum1 + randomNum2;
+        answer = prompt(`Q${questionNum}. ${randomNum1} + ${randomNum2} = ??`);
+    } else if (operation === 2) {
+        correctAnswer = randomNum1 - randomNum2;
+        answer = prompt(`Q${questionNum}. ${randomNum1} - ${randomNum2} = ??`);
+    } else if (operation === 3) {
+        correctAnswer = randomNum1 * randomNum2;
+        answer = prompt(`Q${questionNum}. ${randomNum1} * ${randomNum2} = ??`);
+    }
+    let userInput = answer;
+
+    // 사용자가 취소하거나 입력을 안 했을 경우
+    if (userInput === null || userInput.trim() === '') {
+        alert('값을 입력해주세요!');
+        continue;
+    }
+
+    // 정확히 "0"을 입력했을 경우만 종료
+    if (userInput.trim() === '0') {
         alert('게임을 종료합니다.');
         alert(`# 정답 횟수: ${correctNum}회, 틀린 횟수: ${wrongNum}회`);
         break;
     }
-    if (answer === correctAnswer) {
+
+    if (+answer === correctAnswer) {
         alert('정답입니다!');
         correctNum++;
-    } else {
+        questionNum++;
+    } else if (+answer !== correctAnswer){
        alert('틀렸습니다!');
        wrongNum++;
+       questionNum++;
     }
-    questionNum++;
 }
 
 
