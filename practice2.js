@@ -40,7 +40,7 @@ let questionNum = 1;
 let correctNum = 0;
 let wrongNum = 0;
 let operation;
-let level = +prompt(`~~~~~ 난이도 설정 ~~~~~\n[ 1. 상 (3자리수) | 2. 중 (2자리수) | 3. 하 (1자리수) ]`);;
+let level = +prompt(`~~~~~ 난이도 설정 ~~~~~\n[ 1. 상 (3자리수) | 2. 중 (2자리수) | 3. 하 (1자리수) ]`);
 
 
 // Math.floor(Math.random()*(maxNum - minNum) + minNum);
