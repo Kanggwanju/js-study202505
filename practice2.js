@@ -40,10 +40,22 @@ let questionNum = 1;
 let correctNum = 0;
 let wrongNum = 0;
 let operation;
+let level = +prompt(`~~~~~ 난이도 설정 ~~~~~\n[ 1. 상 (3자리수) | 2. 중 (2자리수) | 3. 하 (1자리수) ]`);;
+
+
 // Math.floor(Math.random()*(maxNum - minNum) + minNum);
 while (true) {
-    maxNum = 10;
-    minNum = 1;
+    if (level === 1) {
+        maxNum = 1000;
+        minNum = 100;
+    } else if (level === 2) {
+        maxNum = 100;
+        minNum = 10;
+    } else if (level === 3) {
+        maxNum = 10;
+        minNum = 1;
+    }
+
     randomNum1 = Math.floor(Math.random()*(maxNum - minNum) + minNum);
     randomNum2 = Math.floor(Math.random()*(maxNum - minNum) + minNum);
     if (randomNum2 >= randomNum1) {
