@@ -36,6 +36,8 @@ let minNum;
 let answer;
 let correctAnswer;
 let questionNum = 1;
+let correctNum = 0;
+let wrongNum = 0;
 // Math.floor(Math.random()*(maxNum - minNum) + minNum);
 while (true) {
     maxNum = 10;
@@ -46,12 +48,15 @@ while (true) {
     answer = +prompt(`Q${questionNum}. ${randomNum1} + ${randomNum2} = ??`);
     if (answer === 0) {
         alert('게임을 종료합니다.');
+        alert(`# 정답 횟수: ${correctNum}회, 틀린 횟수: ${wrongNum}회`);
         break;
     }
     if (answer === correctAnswer) {
         alert('정답입니다!');
+        correctNum++;
     } else {
        alert('틀렸습니다!');
+       wrongNum++;
     }
     questionNum++;
 }
