@@ -12,12 +12,17 @@
 */
 let result = 0;
 let List = [];
-
+console.log(typeof(typeof result));
 while (true) {
   let a = prompt('숫자를 입력하세요.\n그만두려면 그만이라고 입력하세요!');
-  if (a === "그만") {
+  if (a === '그만') {
     for (let n of List) {
-      result += +n;
+      if (isNaN(+n)) {
+        // alert('문자');
+      } else {
+        // alert('숫자');
+        result += +n;
+      }
     }
     alert(`입력한 숫자 목록 [${List}]\n입력한 숫자 총합: ${result}`);
     break;
