@@ -33,6 +33,36 @@ while(true) {
 
 
 
+// 선생님 풀이
+// ctrl + alt + v : 밖으로 빼내기
+// ctrl + alt + n : 안으로 넣기
+/*
+let tvxq = ['유노윤호', '최강창민', '영웅재중', '믹키유천', '시아준수'];
+
+while (tvxq.length > 0) {
+  let targetName = prompt(`현재 멤버: [${tvxq}]
+삭제할 이름을 입력하세요.`);
+
+// 입력한 값이 배열에 저장된 값이어야 삭제를 진행
+  if (tvxq.includes(targetName)) {
+    // 잘 입력한 경우 삭제 진행
+    tvxq.splice(tvxq.indexOf(targetName), 1);
+    alert(`삭제 완료!\n남은 멤버: [${tvxq}]`);
+  } else {
+    alert(`${targetName}은(는) 잘못된 이름입니다.\n다시 입력하세요!`);
+  }
+
+  // 종료조건
+  // if (tvxq.length === 0) break;
+
+}
+*/
+
+
+
+
+
+
 
 
 
