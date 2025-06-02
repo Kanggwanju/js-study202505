@@ -8,7 +8,7 @@ let idx = foods.indexOf('피자');
 console.log(`idx: ${idx}`);
 
 // 음식목록에서 피자를 찾아서 보쌈으로 바꿔주세요.
-foods[foods.indexOf(('피자'))] = '보쌈';
+foods[foods.indexOf('피자')] = '보쌈';
 console.log(foods);
 
 // includes(): 배열에 특정 요소가 있는지의 유무를 확인
