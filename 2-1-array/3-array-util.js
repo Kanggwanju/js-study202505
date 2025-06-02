@@ -34,6 +34,23 @@ console.log(`origin: `, numbers);
 console.log(numbers.slice(3)); // 3번부터 끝까지
 console.log(numbers.slice()); // 전체복사
 
+console.log('=======================================');
+// splice() : 배열의 요소를 추가하거나 삭제 (중간에서 작업 가능)
+// splice(시작) 시작 위치 이후로 다 지움
+// splice(시작, 지울 개수) 시작 위치이상 지울 개수에 따라 지워짐
+// splice(시작, 지울 개수, 그 자리에 넣을 아이템)
+// 지울 개수를 0으로 하면 시작 위치에 아이템을 그냥 집어넣을 수 있다.
+// 배열의 원본을 건드림.
+console.log(foods);
+
+foods.splice(2, 1);
+console.log(foods);
+
+foods.splice(0, 1, '마라탕');
+console.log(foods);
+
+foods.splice(2, 0, '라멘');
+console.log(foods);
 
 
 
