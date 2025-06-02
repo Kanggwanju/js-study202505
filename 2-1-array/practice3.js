@@ -28,6 +28,27 @@ while(true) {
 }
 
 
+// 선생님 풀이
+/*let tvxq = ['유노윤호', '최강창민', '영웅재중', '믹키유천', '시아준수'];
+
+while (true) {
+  let targetName = prompt(`현재 멤버: [${tvxq}]
+수정할 이름을 입력하세요.`);
+
+// 입력한 값이 배열에 저장된 값이어야 수정을 진행
+  if (tvxq.includes(targetName)) {
+    // 잘 입력한 경우 수정 진행
+    // 새로운 이름 입력받기
+    let newName = prompt(`새 이름을 입력하세요!`);
+    tvxq[tvxq.indexOf(targetName)] = newName;
+    alert(`수정 완료!\n남은 멤버: [${tvxq}]`);
+    break;
+  } else {
+    alert(`${targetName}은(는) 잘못된 이름입니다.\n다시 입력하세요!`);
+  }
+}*/
+
+
 
 
 
