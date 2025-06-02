@@ -22,6 +22,7 @@ while(true) {
     changeName = prompt(`새로운 이름을 입력하세요.`);
     members.splice(members.indexOf(deleteName), 1, changeName);
     alert(`수정 완료!\n남은 멤버: [${members}]`);
+    break;
   } else {
     alert(`${deleteName}은(는) 잘못된 이름입니다.\n다시 입력하세요!`);
   }
