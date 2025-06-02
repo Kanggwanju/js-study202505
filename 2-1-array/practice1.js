@@ -12,7 +12,8 @@
 */
 let result = 0;
 let List = [];
-console.log(typeof(typeof result));
+
+
 while (true) {
   let a = prompt('숫자를 입력하세요.\n그만두려면 그만이라고 입력하세요!');
   if (a === '그만') {
@@ -30,3 +31,42 @@ while (true) {
     List.push(a);
   }
 }
+
+// 배운 점
+// 1. 문자열에 + 하면 NaN이 나온다.
+// 2. alert 에서 배열을 ${List} 하면 대괄호를 빼서 나옴.
+// 3. prompt('') 내부에서 '을 쓰고 싶으면 \'으로 쓰면 된다.
+
+
+// 선생님 풀이
+/*
+// 숫자들을 쌓아놓을 배열
+let numbers = [];
+
+// 총합을 저장할 변수
+let total = 0;
+
+while (numbers.length < 6) {
+  // 사용자에게 특정 숫자를 입력받음
+  let num = prompt('숫자를 입력하세요.\n그만두려면 \'그만\'이라고 입력하세요!');
+
+  // 종료조건
+  if (num === '그만') {
+    break;
+  }
+  // 입력한 데이터가 숫자인지 검증
+  if (isNaN(+num)) {
+    alert('숫자만 정확하게 입력하세요.');
+    continue;
+  }
+
+  // 해당숫자를 배열에 저장
+  numbers.push(num);
+  total += parseInt(num);
+
+} // end while
+
+alert(`입력한 숫자 목록: [${numbers}]
+입력한 숫자 총합: ${total}`);
+*/
+
