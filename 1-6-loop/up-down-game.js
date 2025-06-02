@@ -51,14 +51,16 @@ while (true) {
   }
 }
 randomNumber = Math.floor(Math.random() * (maxNumber - minNumber + 1)) + minNumber;
-alert(`난이도가 ${maxNumber}가 되었습니다.`);
+alert(`입력 기회가 ${maxAttempts}가(이) 되었습니다.`);
 while (true) {
-  if (attempt < maxAttempts) {
-    selectedNumber = +prompt(`숫자를 입력하세요! [ ${minNumber} ~ ${maxNumber} ]`);
+  if (attempt <= maxAttempts) {
+    selectedNumber = +prompt(`숫자를 입력하세요! [ ${minNumber} ~ ${maxNumber} ] ${randomNumber}`);
     if (selectedNumber >= minNumber && selectedNumber <= maxNumber) {
       if (selectedNumber < randomNumber) {
+        minNumber = selectedNumber + 1;
         alert('UP!!');
       } else if (selectedNumber > randomNumber) {
+        maxNumber = selectedNumber - 1;
         alert('DOWN!!');
       } else if (selectedNumber === randomNumber) {
         alert('정답입니다!');
