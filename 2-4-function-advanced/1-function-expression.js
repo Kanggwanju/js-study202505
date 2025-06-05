@@ -74,7 +74,7 @@ const obj = {
   name: '나비',
   age: 5,
   injection: true,
-  favorites: ['산책', 공놀이],
+  favorites: ['산책', '공놀이'],
   owner: {
     name: '홍길동',
     age: 30
