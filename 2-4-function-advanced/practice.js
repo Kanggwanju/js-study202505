@@ -51,17 +51,10 @@ function every(callback) {
 }
 
 function some(callback) {
-  let count = 0;
   for (const user of userList) {
-    if (callback(user)){
-      count++;
-    }
+    if (callback(user)) { return true; }
   }
-  if (count === 0) {
-    return false;
-  } else {
-    return true;
-  }
+  return false;
 }
 
 function none(callback) {
