@@ -34,6 +34,7 @@ const productList = [
   },
 ];
 
+// 함수 정의부
 function every(callback) {
   for (const product of productList) {
     if (!callback(product)) return false;
@@ -55,20 +56,38 @@ function none(callback) {
   return true;
 }
 
+function custom(userArray, callback, type) {
+  if (type === 'filter') {
+    const filteredArray = [];
+    for (const user of userArray) {
+      if (callback(user)) {
+        filteredArray.push(user);
+      }
+    }
+    return filteredArray;
+  } else if (type === 'map') {
+    const mappedArray = [];
+    for (const user of userArray) {
+      mappedArray.push(callback(user));
+    }
+    return mappedArray;
+  } else {
+    console.log('올바른 타입을 입력하세요.')
+    return null;
+  }
+}
+
 const result1 = every(product => product.stock > 0);
 console.log(result1);  // false
 
 const result2 = some(product => product.category === '음료');
 console.log(result2);  // true
 
-
 const result3 = none(product => product.name.endsWith('이'));
 console.log(result3);  // false
 
-/*
 const result4 = custom(productList, product => product.tags.includes('인기'), 'filter');
 console.log(result4);
 
 const result5 = custom(productList, product => product.name, 'map');
 console.log(result5);
-*/
