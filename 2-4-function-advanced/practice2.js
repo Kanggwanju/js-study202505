@@ -56,7 +56,7 @@ function none(callback) {
   return true;
 }
 
-function custom(userArray, callback, type) {
+function custom(userArray, callback, type, initialValue) {
   switch (type) {
     case 'filter':
       const filteredArray = [];
@@ -71,6 +71,13 @@ function custom(userArray, callback, type) {
         mappedArray.push(callback(item));
       }
       return mappedArray;
+
+    case 'reduce':
+      let acc = initialValue;
+      for (const item of userArray) {
+        acc = callback(acc, item);
+      }
+      return acc;
 
     default:
       throw new Error(`지원하지 않는 타입입니다: ${type}`);
@@ -91,3 +98,15 @@ console.log(result4);
 
 const result5 = custom(productList, product => product.name, 'map');
 console.log(result5);
+
+const result6 = every(product => product.price >= 2000);
+console.log(result6);  // false
+
+const result7 = none(product => !product.tags.includes('탄산'));
+console.log(result7);  // false
+
+const result8 = custom(productList, (acc, item) => acc + item.stock, 'reduce', 0);
+console.log(result8);  // 33 (15 + 0 + 8 + 10)
+
+
+
