@@ -117,6 +117,6 @@ console.log(result7);  // false
 const result8 = custom(productList, (acc, item) => acc + item.stock, 'reduce', 0);
 console.log(result8);  // 33 (15 + 0 + 8 + 10)
 
-const result9 = custom(productList, product => product.tags.includes('필수'), 'find');
+const result9 = custom(productList, product => product.name.includes('콜'), 'find');
 console.log(result9);
 
