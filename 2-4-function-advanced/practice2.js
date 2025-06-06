@@ -79,6 +79,15 @@ function custom(userArray, callback, type, initialValue) {
       }
       return acc;
 
+    case 'find':
+      /*
+        filter는 조건을 만족하는 모든 항목을 배열로 반환하는 반면,
+        find는 조건을 만족하는 첫 번째 항목만 반환하고 끝남
+      */
+      for (const item of userArray) {
+        if (callback(item)) return item;
+      }
+      return undefined;
     default:
       throw new Error(`지원하지 않는 타입입니다: ${type}`);
   }
@@ -108,5 +117,6 @@ console.log(result7);  // false
 const result8 = custom(productList, (acc, item) => acc + item.stock, 'reduce', 0);
 console.log(result8);  // 33 (15 + 0 + 8 + 10)
 
-
+const result9 = custom(productList, product => product.tags.includes('필수'), 'find');
+console.log(result9);
 
