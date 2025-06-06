@@ -57,23 +57,23 @@ function none(callback) {
 }
 
 function custom(userArray, callback, type) {
-  if (type === 'filter') {
-    const filteredArray = [];
-    for (const user of userArray) {
-      if (callback(user)) {
-        filteredArray.push(user);
+  switch (type) {
+    case 'filter':
+      const filteredArray = [];
+      for (const item of userArray) {
+        if (callback(item)) filteredArray.push(item);
       }
-    }
-    return filteredArray;
-  } else if (type === 'map') {
-    const mappedArray = [];
-    for (const user of userArray) {
-      mappedArray.push(callback(user));
-    }
-    return mappedArray;
-  } else {
-    console.log('올바른 타입을 입력하세요.')
-    return null;
+      return filteredArray;
+
+    case 'map':
+      const mappedArray = [];
+      for (const item of userArray) {
+        mappedArray.push(callback(item));
+      }
+      return mappedArray;
+
+    default:
+      throw new Error(`지원하지 않는 타입입니다: ${type}`);
   }
 }
 
