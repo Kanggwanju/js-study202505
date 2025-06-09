@@ -38,24 +38,45 @@ const userList = [
   },
 ];
 
-//
+/**
+ * @param callback - 모두가 이 조건에 부합한지 확인할 함수
+ * @returns {boolean} - 하나라도 만족하지 않으면 false,
+ *                      모두 만족하면 true
+ */
 
 function every(callback) {
+  // 유저 배열을 순회한다.
   for (const user of userList) {
-    if (callback(user)) {
-    } else {
+    // 콜백조건을 실행했을 때 결과가 false인 경우
+    if (!callback(user)) {
+      // 더 볼 필요 없이 false를 반환한다.
       return false;
     }
   }
+  // 반복문이 모두 끝났는데도 리턴이 안나왔다면
+  // 모든 요소가 조건에 만족하는 것이므로 최종적으로 true 반환
   return true;
 }
 
 function some(callback) {
+  // 유저 배열을 순회한다.
   for (const user of userList) {
-    if (callback(user)) { return true; }
+    // 콜백조건을 실행했을 때 결과가 하나라도 true인 경우
+    if (callback(user)) {
+      // 더 볼 필요 없이 true를 반환한다.
+      return true;
+    }
   }
+  // 반복문이 모두 끝났는데도 리턴이 안나왔다면
+  // 모든 요소가 조건에 만족하는 것 없는것이므로 최종적으로 false 반환
   return false;
 }
+/*
+// none 함수는 some 함수의 반대이다.
+function none(callback) {
+  return !some(callback);
+}
+*/
 
 function none(callback) {
   for (const user of userList) {
