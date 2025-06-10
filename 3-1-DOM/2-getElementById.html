@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Title</title>
+    <style>
+        #peach {
+            color: hotpink;
+        }
+    </style>
+</head>
+<body>
+    <ul>
+        <li id="apple">사과</li>
+        <li id="banana">바나나</li>
+        <li id="grape">포도</li>
+        <li id="peach" style="font-size: 1.5em">복숭아</li>
+    </ul>
+
+    <script>
+        // Element를 뒤에 붙이면 태그 이름을 나타냄
+        // $를 앞에 붙이는 경우도 또한.
+        const $banana = document.getElementById('banana');
+        console.log(typeof $banana);
+        console.log($banana.tagName);
+        console.log($banana.id);
+        console.log($banana.textContent);
+
+        $banana.textContent = '뽀너너';
+        // 객체 프로퍼티 동적 추가
+        $banana.apple = '사과';
+
+        // 객체 프로퍼티 동적 삭제
+        delete $banana.apple;
+
+        console.log('=======================================');
+        const $peach = document.getElementById('peach');
+
+        // 인라인 속성으로 들어가므로 좋지 않음.
+        $peach.style.fontStyle = 'italic';
+
+    </script>
+</body>
+</html>
