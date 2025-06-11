@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Title</title>
+  <style>
+      .box {
+          width: 100px;
+          height: 100px;
+          background: orange;
+          margin: 20px;
+      }
+      .green {
+          background: yellowgreen;
+          font-size: 25px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
+      .red {
+          background: red;
+      }
+      .opacity {
+          opacity: 0.5;
+      }
+  </style>
+</head>
+<body>
+
+  <div class="box" onclick="boxClickHandler()"></div>
+  <div class="box green" ondblclick="growHandler()"></div>
+  <div class="box red" onmouseover="makeTextHandler()" onmouseout="removeTextHandler()"></div>
+
+  <script>
+    // 이벤트 바인딩: 이벤트가 발생했을 때 실행 할 함수를 태그에 연결
+    // 이벤트 핸들러(리스너): 이벤트가 발생했을 때 실행할 함수
+    // 접미사에 Handler, 혹은 접두사로 handle을 붙임
+
+    // attribute 바인딩 방식: html 태그에 인라인 방식으로 이벤트 핸들러 호출
+
+    function boxClickHandler() {
+      alert('오렌지 박스를 클릭함!!');
+    }
+
+    // 함수 표현식으로 정의
+    const growHandler = function () {
+      const $greenBox = document.querySelector('.green');
+      $greenBox.style.width = '200px';
+    };
+
+    // 화살표 함수
+    const makeTextHandler = () => {
+      const $red = document.querySelector('.red');
+      $red.textContent = '안뇽?';
+    };
+    const removeTextHandler = () => {
+      const $red = document.querySelector('.red');
+      $red.textContent = '';
+    };
+
+  </script>
+</body>
+</html>
