@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Title</title>
+</head>
+<body>
+
+  <input type="text" id="colorInput" placeholder="색상 이름이나 HEX 코드를 입력하세요">
+  <div id="warning" style="color: red; display: none;">유효하지 않은 색상입니다!</div>
+
+  <script>
+    const $inputColor = document.querySelector('#colorInput');
+    const $warningText = document.querySelector('#warning');
+    const $bd = document.querySelector('body');
+
+    const changeBackgroundHandler = () => {
+      $bd.style.background = $inputColor.value;
+      if ($inputColor.value === '') {
+        $warningText.style.display = 'none';
+      }
+      else {
+        if ($bd.style.background === '') {
+          $warningText.style.display = 'block';
+        } else {
+          $warningText.style.display = 'none';
+        }
+      }
+    };
+    
+    $inputColor.addEventListener('input', changeBackgroundHandler);
+
+  </script>
+</body>
+</html>
