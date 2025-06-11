@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Title</title>
+</head>
+<body>
+  <input type="text" id="txt">
+  <p class="show">123</p>
+
+  <script>
+    // 화면 전체(document)에 이벤트를 추가
+    // e는 이벤트 객체, 클릭한 위치의 좌표 정보, 누르고 있는 키 등
+    // 여러가지 정보를 담고 있음.
+    document.addEventListener('click', e => {
+      const $msg = document.querySelector('.show');
+      if (e.shiftKey) {
+        $msg.textContent = `x: ${e.x}, y: ${e.y}`;
+      } else {
+        $msg.textContent = '';
+      }
+    });
+
+
+    const $input = document.getElementById('txt');
+    $input.addEventListener('keyup', e => {
+      // 입력값, 쉬프트키 ESC 뭘눌렀는지 어떻게 알지?
+      // console.log(e.target.value);
+      e.stopPropagation()
+
+      if (e.key === 'Enter') {
+        document.querySelector('.show').textContent = e.target.value;
+        e.target.value = ''; // 입력창 리셋
+      }
+    });
+  </script>
+</body>
+</html>
