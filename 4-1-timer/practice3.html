@@ -57,15 +57,9 @@
     const $logContainer = document.getElementById('logContainer');
     let intervalId = null;
     const $display = document.getElementById('display');
+    let elapsedTime = 0;
 
-
-
-    $startBtn.addEventListener('click', e => {
-
-      // 버튼 잠그기
-      $startBtn.disabled = true;
-      $pauseBtn.disabled = false;
-
+    function startInterval() {
       // 이미 인터벌이 실행중이면 종료
       if (intervalId) return;
 
@@ -76,30 +70,45 @@
       intervalId = setInterval(() => {
         const now = new Date();
         // 경과시간 구하기
-        const elapsedTime = now - startTime; // 양 시간의 차이를 밀리초로 알려줌
+        elapsedTime = now - startTime; // 양 시간의 차이를 밀리초로 알려줌
 
         // 타이머에 경과시간 렌더링
         $display.textContent = elapsedTime / 1000; // 초로 변환
-      }, 100);
+      }, 10);
+    }
+
+
+    $startBtn.addEventListener('click', e => {
+
+      // 버튼 잠그기
+      $startBtn.disabled = true;
+      $pauseBtn.disabled = false;
+
+      startInterval(intervalId);
     });
 
     $pauseBtn.addEventListener('click', e => {
-      $pauseBtn.textContent = '재개';
+      if ($pauseBtn.textContent === '일시정지') {
+        $pauseBtn.textContent = '재개';
+        // 태그 생성
+        const $newTag = document.createElement('div');
+        // 생성한 태그에 클래스 추가
+        $newTag.classList.add('log-entry');
+        // 생성한 태그에 text 추가 (현재 기록)
+        $newTag.textContent = $display.textContent;
+        // 생성한 태그를 logContainer 밑에 추가
+        $logContainer.append($newTag);
+        // 인터벌 중지 (시간 정지)
+        clearInterval(intervalId);
+        intervalId = null;
+      } else if ($pauseBtn.textContent === '재개') {
+        $pauseBtn.textContent = '일시정지';
+        startInterval(intervalId);
+      }
 
 
-      // 태그 생성
-      const $newTag = document.createElement('p');
-      // 생성한 태그에 클래스 추가
-      $newTag.classList.add('log-entry');
-      // 생성한 태그에 text 추가 (현재 기록)
-      $newTag.textContent = $display.textContent;
-      // 생성한 태그를 logContainer 밑에 추가
-      $logContainer.append($newTag);
-
-      // 인터벌 중지 (시간 정지)
-      clearInterval(intervalId);
       // 다음 인터벌을 위해 id 초기화
-      intervalId = null;
+      // intervalId = null;
     });
 
     $resetBtn.addEventListener('click', e => {
@@ -107,8 +116,22 @@
       $startBtn.disabled = false;
       $pauseBtn.disabled = true;
 
+      // 디스플레이, 멈춤 버튼 텍스트 변경
       $display.textContent = '00:00:00';
       $pauseBtn.textContent = '일시정지';
+
+      // 인터벌 중지 (시간 정지)
+      clearInterval(intervalId);
+
+      // 다음 인터벌을 위해 id 초기화
+      intervalId = null;
+
+      // 일시정지 로그 삭제
+      [...$logContainer.children].forEach((child, idx) => {
+        if (idx !== 0) {
+          child.remove()
+        }
+      });
     });
 
 
