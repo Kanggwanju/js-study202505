@@ -37,6 +37,12 @@
           font-size: 1rem;
           color: #555;
       }
+      .log-restore {
+          display: none;
+          padding: 5px;
+          border: 1px solid;
+          cursor: pointer;
+      }
   </style>
 </head>
 <body>
@@ -51,6 +57,7 @@
   <div class="log-container" id="logContainer">
     <h2>일시정지 로그</h2>
     <div class="log-entry"></div>
+    <div class="log-restore">복원하기</div>
   </div>
 
   <script>
@@ -93,6 +100,7 @@
       // 현재 멈춘 시간을 읽어서 로그엔트리 박스에 추가하기
       const $logDiv = document.createElement('div');
       $logDiv.textContent = $display.textContent;
+      $logDiv.style.cursor = 'pointer';
       document.querySelector('.log-entry').append($logDiv);
     }
 
@@ -142,8 +150,31 @@
       $display.textContent = '00:00:00';
       $pauseBtn.textContent = '일시정지';
 
+      // 복원 박스 display: none
+      document.querySelector('.log-restore').style.display = 'none';
+
       changeState(false);
       document.querySelector('.log-entry').innerHTML = '';
+    }
+
+    // 로그 삭제 이벤트 핸들러
+    function deleteLog(e) {
+      if (!e.target.matches('.log-entry *')) return;
+
+      const isConfirm = confirm('삭제하시겠습니까?');
+      if (isConfirm) {
+        // 클릭한 객체를 display:none 하여 안보이게 만들고, 자리도 차지하지 않게 만들음.
+        e.target.style.display = 'none';
+        document.querySelector('.log-restore').style.display = 'block';
+      }
+    }
+
+    // 로그 복원 이벤트 핸들러
+    function restoreLog(e) {
+      const logs = [...document.querySelector('.log-entry').children];
+      logs.forEach(log => {
+        log.style.display = 'block';
+      });
     }
 
     // === 이벤트 핸들러 바인딩 === //
@@ -152,6 +183,9 @@
     $pauseBtn.addEventListener('click', pauseStopwatch);
 
     $resetBtn.addEventListener('click', resetStopwatch);
+
+    document.querySelector('.log-entry').addEventListener('click', deleteLog);
+    document.querySelector('.log-restore').addEventListener('click', restoreLog);
 
   </script>
 
