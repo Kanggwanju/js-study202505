@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Title</title>
+</head>
+<body>
+
+
+  <script>
+    // 3초마다 순환하면서 바디의 백그라운드를 변경시킴
+    // 단, 15초 후에는 더이상 배경 변경을 멈춰야함
+    const colors = ["lightblue", "lightgreen", "lightcoral"];
+    const $body = document.querySelector('body');
+    let idx = 0;
+    let intervalId = null;
+
+    // 3초마다 colors를 순환하면서 바디의 백그라운드를 변경시킴
+    intervalId = setInterval(() => {
+      // idx를 통해 colors의 요소를 탐색, 배경 바꿈
+      $body.style.background = colors[idx];
+      // 배경 색을 바꾼 후 idx 값을 0 -> 1 -> 2 -> 0 -> ...
+      idx = (idx + 1) % colors.length;
+    }, 3000);
+
+    // 15초 후 인터벌을 중지
+    setTimeout(() => {
+      clearInterval(intervalId);
+    }, 15000);
+  </script>
+</body>
+</html>
