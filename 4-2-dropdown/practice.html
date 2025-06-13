@@ -72,6 +72,7 @@
     const $dropDownMenu = document.getElementById('dropdownMenu');
     const $thirdHoverMenu = document.querySelector('.submenu');
     const $hoverSubMenu = document.getElementById('submenuMenu');
+    let submenuCloseTimer = null;
 
     // 메인드롭다운 클릭
     $dropDownBtn.addEventListener('click', e => {
@@ -86,12 +87,16 @@
     */
     // 서브 드롭다운 마우스 호버
     $thirdHoverMenu.addEventListener('mouseenter', e => {
+      clearTimeout(submenuCloseTimer);
       $hoverSubMenu.classList.add('show');
     });
 
     // 전체 드롭다운 메뉴에서 벗어났을 때
-    $dropDownMenu.addEventListener('mouseleave', e => {
-      $hoverSubMenu.classList.remove('show');
+    $thirdHoverMenu.addEventListener('mouseleave', e => {
+      submenuCloseTimer  = setTimeout(() => {
+        $hoverSubMenu.classList.remove('show');
+      }, 200); // 0.2초 딜레이
+
     });
   </script>
 </body>
