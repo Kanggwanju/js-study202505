@@ -39,11 +39,7 @@ function updateFeedback(feedbackText, feedbackClass) {
 function judgeGuess() {
   const { secretNumber, userAnswer } = gameData;
 
-  // GAME OVER 처리
-  if (gameData.remainingChanges === 0) {
-    showFinishModal(false);
-    return;
-  }
+
 
 
 
@@ -88,6 +84,11 @@ function judgeGuess() {
     ) {
       updateFeedback(`정답은 ${gameData.minRange}밖에 없네요!`, 'correct');
       showFinishModal();
+    }
+
+    // GAME OVER 처리
+    if (gameData.remainingChanges === 0) {
+      showFinishModal(false);
     }
 
     // 모든 판정이 끝난 후 UI 업데이트
