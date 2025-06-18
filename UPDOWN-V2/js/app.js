@@ -1,190 +1,224 @@
 
-// ====== 함수 정의 영역 ======= //
+// ===== 전역 상태 관리 ===== //
 
-// 게임 데이터들을 변경하는 클로저 정의
-function changeGameData(begin, end, chances) {
-  // 최소값
-  let minValue = begin;
-  // 최대값
-  let maxValue = end;
-  // 남은 기회
-  let chance = chances;
-  // 1 ~ 100 사이의 무작위 난수 생성
-  let secret = Math.floor(Math.random() * end) + begin;
+// 게임에 필요한 데이터들을 하나의 객체로 묶어서 관리
+const gameData = {
+  secretNumber: Math.floor(Math.random() * 100) + 1, // 1 ~ 100 사이 무작위 숫자
+  userAnswer: 0, // 사용자의 입력
+  remainingChanges: 10, // 남은 기회
+  minRange: 1, // 범위의 최소값
+  maxRange: 100, // 범위의 최대값
+  guessHistory: [], // 사용자의 추리 기록 로그
+};
 
-  return {
-    up: (guess) => {
-      console.log('UP!!');
-      minValue = guess + 1;
-      chance = chance - 1;
-    },
-    down: (guess) => {
-      console.log('DOWN!!');
-      maxValue = guess - 1;
-      chance = chance - 1;
-    },
-    getStatus: () => ({ minValue, maxValue, chance, secret }), // 자기 정보 가져오기
-  };
+// ======= DOM 가져오기 ====== //
+const $guessForm = document.getElementById('guess-form');
+const $guessInput = document.getElementById('guess-input');
+const $begin = document.getElementById('begin');
+const $end = document.getElementById('end');
+const $chancesLeft = document.getElementById('chances-left');
+const $feedback = document.getElementById('feedback');
+const $historyList = document.getElementById('history-list');
+
+// 힌트 버튼 추가
+const $hintBtn = document.getElementById('hint-button');
+
+const $finishModal = document.getElementById('finish-modal');
+const $finishTitle = document.getElementById('finish-title');
+const $finishText = document.getElementById('finish-text');
+const $restartBtn = document.getElementById('restart-button');
+
+
+// ==== 게임 로직 함수 정의 ==== //
+
+// 피드백 텍스트를 처리하는 함수
+function updateFeedback(feedbackText, feedbackClass) {
+  $feedback.textContent = feedbackText;
+  $feedback.classList.remove('up', 'down', 'correct');
+  if (feedbackClass) $feedback.classList.add(feedbackClass);
 }
 
-// UP 처리 함수
-function secretUp($input, random) {
-  random.up(+$input.value);
-  $input.value = '';
-  // console.log(`minValue: ${random.getStatus().minValue}`);
-}
+// 1. 업다운 정답 판정 로직
+function judgeGuess() {
+  const { secretNumber, userAnswer } = gameData;
 
-// DOWN 처리 함수
-function secretDown($input, random) {
-  random.down(+$input.value);
-  $input.value = '';
-  // console.log(`maxValue: ${random.getStatus().maxValue}`);
-}
+  // 값 비교
+  // 정답인 경우
+  if (secretNumber === userAnswer) {
+    // 피드백 텍스트를 업데이트
+    updateFeedback('정답입니다!', 'correct');
 
-// 정답 처리 함수
-function secretCorrect(random, $form) {
-  // 정답 모달
-  const $modalOverlay = document.getElementById('finish-modal');
-  // 정답 텍스트 요소
-  const $finishTitle = document.getElementById('finish-title');
-  const $finishText = document.getElementById('finish-text');
-  // 재도전 버튼
-  $finishTitle.textContent = 'Congratulation!';
-  $finishText.textContent = `정답은 ${random.getStatus().secret}였습니다!`;
-  $modalOverlay.classList.add('show');
+    // 로그 기록
+    gameData.guessHistory.push({
+      guess: userAnswer,
+      resultText: '정답',
+      resultClass: 'correct'
+    });
 
-  resetGame($form);
-}
+    // 모달 띄우기
+    showFinishModal();
+  } else {
+    // 정답이 아닌 경우 UP 또는 DOWN
+    const result = userAnswer < secretNumber ? 'UP' : 'DOWN';
+    updateFeedback(`${result}!!`, result.toLowerCase());
 
-// 실패 처리 함수
-function gameOver(random, $form) {
-  // 실패 모달
-  const $modalOverlay = document.getElementById('finish-modal');
-  // 실패 텍스트 요소
-  const $finishTitle = document.getElementById('finish-title');
-  const $finishText = document.getElementById('finish-text');
-  $finishTitle.textContent = 'GAME OVER';
-  $finishText.textContent = `정답은 ${random.getStatus().secret}였습니다...`;
-  $finishTitle.style.color = 'red';
-  $modalOverlay.classList.add('show');
-
-  // 게임 리셋 함수
-  resetGame($form);
-}
-
-// 게임 리셋 함수
-function resetGame($form) {
-  const $restartBtn = document.getElementById('restart-button');
-  $restartBtn.addEventListener('click', e => {
-    $form.submit();
-  });
-}
-
-
-// 인터페이스 변경 함수
-function changeInterface(random, upDown, userGuess) {
-  // 범위 최소 가져오기
-  const $beginSpan = document.getElementById('begin');
-  // 범위 최대 가져오기
-  const $endSpan = document.getElementById('end');
-  // 남은 기회 가져오기
-  const $chancesSpan = document.getElementById('chances-left');
-  // 피드백 노드 가져오기
-  const $feedback = document.getElementById('feedback');
-  // 도전 기록 리스트 노드 가져오기
-  const $historyList = document.getElementById('history-list');
-  $beginSpan.textContent = random.getStatus().minValue;
-  $endSpan.textContent = random.getStatus().maxValue;
-  $chancesSpan.textContent = random.getStatus().chance;
-
-  if (upDown === 'up') {
-    $feedback.textContent = 'UP!!';
-    $feedback.classList.add('up');
-    $feedback.classList.remove('down');
-
-    const $newDiv = document.createElement('div');
-    $newDiv.classList.add('up');
-    $newDiv.classList.add('history-item');
-    $newDiv.textContent = `${userGuess} (UP)`;
-    $historyList.prepend($newDiv);
-
-  } else if (upDown === 'down') {
-    $feedback.textContent = 'DOWN!!';
-    $feedback.classList.add('down');
-    $feedback.classList.remove('up');
-
-    const $newDiv = document.createElement('div');
-    $newDiv.classList.add('down');
-    $newDiv.classList.add('history-item');
-    $newDiv.textContent = `${userGuess} (DOWN)`;
-    $historyList.prepend($newDiv);
-
-  } else if (upDown === 'correct') {
-    $feedback.textContent = 'CORRECT!!';
-    $feedback.classList.add('correct');
-    $feedback.classList.remove('up');
-    $feedback.classList.remove('down');
-  }
-}
-
-
-// 패널을 설정하는 함수 정의
-function setGamePanel() {
-  // console.log('UP & DOWN 게임을 시작합니다.');
-  // 범위 최소 가져오기
-  const $beginSpan = document.getElementById('begin');
-  // 범위 최대 가져오기
-  const $endSpan = document.getElementById('end');
-  // 남은 기회 가져오기
-  const $chancesSpan = document.getElementById('chances-left');
-  // 폼 가져오기
-  const $form = document.getElementById('guess-form');
-  let random = null;
-
-  // 난수 생성
-  random = changeGameData(+$beginSpan.textContent, +$endSpan.textContent, +$chancesSpan.textContent);
-
-  // 난수 디버깅 로그
-  console.log(random.getStatus().secret);
-
-  // 폼 제출 이벤트
-  $form.addEventListener('submit', e => {
-    e.preventDefault(); // 제출 자체를 막음, 제출되면 새로고침 된다.
-    const $input = document.getElementById('guess-input');
-    const userGuess = +$input.value;
-    // console.log('유저 추측:',userGuess);
-
-    // 입력값 검증
-    if (userGuess < random.getStatus().minValue || userGuess > random.getStatus().maxValue) {
-      $input.value = '';
-      alert(`반드시 ${random.getStatus().minValue}와 ${random.getStatus().maxValue} 사이의 숫자를 입력하세요!`);
-      return;
-    }
-
-    // 정답을 판별하는 조건 로직
-    if (random.getStatus().secret === userGuess) {
-      // 정답인 경우
-      secretCorrect(random, $form);
-      changeInterface(random, 'correct', userGuess);
-    } else if (random.getStatus().secret > userGuess) {
-      // UP인 경우
-      secretUp($input, random);
-      changeInterface(random, 'up', userGuess);
+    // 범위 업데이트
+    if (result === 'UP') {
+      gameData.minRange = userAnswer + 1;
     } else {
-      // DOWN인 경우
-      secretDown($input, random);
-      changeInterface(random, 'down', userGuess);
+      gameData.maxRange = userAnswer - 1;
     }
 
-    // 입력 횟수 소진 게임 종료 함수
-    if (random.getStatus().chance === 0) {
-      console.log('기회가 모두 소진되었습니다.');
-      gameOver(random, $form);
+    // 로그 배열에 로그 기록 쌓기
+    gameData.guessHistory.push({
+      guess: userAnswer,
+      resultText: result,
+      resultClass: result.toLowerCase()
+    });
+
+
+    // 자동 정답인 경우
+    if (
+      gameData.minRange === gameData.maxRange
+      && gameData.remainingChanges > 0
+    ) {
+      updateFeedback(`정답은 ${gameData.minRange}밖에 없네요!`, 'correct');
+      showFinishModal();
     }
-  });
+
+    // GAME OVER 처리
+    if (gameData.remainingChanges === 0) {
+      showFinishModal(false);
+    }
+
+
+    // 모든 판정이 끝난 후 UI 업데이트
+    updateUI();
+  }
+
 }
 
-// ====== 코드 실행 영역 ======= //
+// 2. UI 업데이트 로직
+function updateUI() {
+  // 범위값 리렌더링
+  $begin.textContent = gameData.minRange;
+  $end.textContent = gameData.maxRange;
 
-// 패널 설정 함수 실행
-setGamePanel();
+  $guessInput.min = gameData.minRange;
+  $guessInput.max = gameData.maxRange;
+
+  // 남은 기회 리렌더링
+  $chancesLeft.textContent = gameData.remainingChanges;
+
+  // 로그 렌더링
+  $historyList.innerHTML = '';
+  gameData.guessHistory.forEach(({ guess, resultText, resultClass }) => {
+    const $li = document.createElement('li');
+    $li.classList.add('history-item', resultClass);
+    $li.textContent = `${guess} (${resultText})`;
+
+    $historyList.prepend($li);
+  });
+
+  // 인풋 초기화
+  resetInput();
+}
+
+// 3. 모달을 제어하는 로직
+function showFinishModal(isCorrect = true) {
+  setTimeout(() => {
+
+    $finishModal.classList.add('show');
+    $finishText.textContent = `정답은 ${gameData.secretNumber}였습니다!`;
+
+    if (isCorrect) {
+      $finishTitle.textContent = `Congratulation!`;
+      $finishTitle.style.color = 'var(--success-color)';
+    } else {
+      $finishTitle.textContent = `GAME OVER`;
+      $finishTitle.style.color = 'var(--danger-color)';
+    }
+
+  }, 1000);
+}
+
+function resetInput() {
+  $guessInput.value = '';
+  $guessInput.focus();
+}
+
+// 4. 게임을 재시작하는 로직
+function initializeGame() {
+  // 데이터 리셋
+  gameData.secretNumber = Math.floor(Math.random() * 100) + 1;
+  gameData.remainingChanges = 10;
+  gameData.minRange = 1;
+  gameData.maxRange = 100;
+  gameData.guessHistory = [];
+
+  console.log(`정답: ${gameData.secretNumber}`);
+
+  // UI 리셋
+  updateFeedback('추리를 시작하세요', '');
+  $finishModal.classList.remove('show');
+  updateUI();
+}
+
+// 숫자 입력을 검증하는 함수
+function isValidate(userGuess) {
+  if (
+    isNaN(userGuess)
+    || userGuess < gameData.minRange
+    || userGuess > gameData.maxRange
+  ) {
+    alert(`반드시 ${gameData.minRange}와 ${gameData.maxRange} 사이의 숫자를 입력하세요!`);
+    resetInput();
+    return false;
+  }
+  return true;
+}
+
+// ==== 이벤트 리스너 설정 ==== //
+
+// 1. 숫자를 입력하고 도전을 클릭하는 이벤트
+$guessForm.addEventListener('submit', e => {
+
+  // form의 새로고침 기능을 방지
+  e.preventDefault();
+
+  // 사용자가 입력한 숫자를 읽기
+  const userGuess = +$guessInput.value;
+
+  // 입력값 검증
+  if (!isValidate(userGuess)) return;
+
+  // 입력기회 차감
+  gameData.remainingChanges--;
+  gameData.userAnswer = userGuess;
+
+  // 판정
+  judgeGuess();
+
+});
+
+// 2. 게임 재시작 이벤트
+$restartBtn.addEventListener('click', e => {
+  initializeGame();
+});
+
+// 3. 힌트 버튼 이벤트
+$hintBtn.addEventListener('click', e => {
+  if (gameData.remainingChanges < 2) {
+    alert('기회가 부족하여 힌트를 사용할 수 없습니다!');
+    return;
+  }
+
+  gameData.remainingChanges--;
+
+  const hint = gameData.secretNumber % 2 === 0 ? '짝수' : '홀수';
+  updateFeedback(`힌트: 정답은 ${hint}입니다. (기회 1회 차감)`, '');
+  updateUI();
+});
+
+// ==== 실행 코드 ==== //
+initializeGame();

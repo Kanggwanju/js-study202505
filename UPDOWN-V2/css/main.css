@@ -94,6 +94,18 @@ body {
     margin: 0;
 }
 
+.hint-button {
+    padding: 12px 15px;
+    font-size: 18px;
+    font-weight: 700;
+    background-color: #ffc107; /* 힌트를 의미하는 노란색 */
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    flex-shrink: 0; /* 버튼이 찌그러지지 않도록 */
+}
+
 .guess-button {
     padding: 12px 25px;
     font-size: 18px;
