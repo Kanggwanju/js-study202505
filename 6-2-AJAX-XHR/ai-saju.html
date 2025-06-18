@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>AI 사주풀이</title>
+  <style>
+      *, *::before, *::after {
+          box-sizing: border-box;
+      }
+      body {
+          font-family: 'Noto Sans KR', sans-serif;
+          padding: 40px;
+          background-color: #f9f9fb;
+          color: #333;
+      }
+      h1 {
+          text-align: center;
+          margin-bottom: 30px;
+          color: #5A4AE3;
+      }
+      .form-box {
+          background: white;
+          padding: 35px;
+          border-radius: 18px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+          max-width: 520px;
+          margin: 0 auto;
+      }
+      label {
+          display: block;
+          margin-top: 18px;
+          font-weight: 600;
+          font-size: 15px;
+          color: #555;
+      }
+      input,
+      select {
+          padding: 12px;
+          width: 100%;
+          margin-top: 8px;
+          border: 1px solid #d1d5db;
+          border-radius: 10px;
+          font-size: 15px;
+          background-color: #fefefe;
+          transition: border 0.2s;
+          vertical-align: middle;
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+      }
+      input:focus,
+      select:focus {
+          outline: none;
+          border-color: #7e6eea;
+          box-shadow: 0 0 0 3px rgba(126, 110, 234, 0.2);
+      }
+      button {
+          margin-top: 30px;
+          padding: 14px;
+          background: linear-gradient(to right, #7e6eea, #a184f0);
+          color: white;
+          border: none;
+          border-radius: 10px;
+          width: 100%;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background 0.3s;
+      }
+      button:hover {
+          background: linear-gradient(to right, #6b5bd3, #9476e5);
+      }
+      .result-box {
+          max-width: 700px;
+          margin: 50px auto;
+          padding: 40px;
+          background: white;
+          border-radius: 16px;
+          box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+          text-align: center;
+      }
+      .character {
+          font-size: 1.8rem;
+          font-weight: 800;
+          color: #5A4AE3;
+          margin-bottom: 12px;
+      }
+      .intro {
+          font-style: italic;
+          font-size: 1.1rem;
+          margin-bottom: 24px;
+          color: #666;
+      }
+      .info {
+          padding-left: 0;
+          list-style: none;
+          text-align: left;
+      }
+      .info li {
+          background: #f4f4f9;
+          margin-bottom: 12px;
+          padding: 15px 20px;
+          border-radius: 8px;
+          font-size: 15px;
+          line-height: 1.6;
+          box-shadow: inset 0 0 0 1px #e5e7eb;
+      }
+      .back-button {
+          margin-top: 30px;
+          padding: 10px 20px;
+          background: #d1d5db;
+          border: none;
+          border-radius: 8px;
+          font-size: 14px;
+          cursor: pointer;
+      }
+      .loading {
+          display: none;
+          text-align: center;
+          margin-top: 20px;
+          font-size: 16px;
+          color: #7e6eea;
+      }
+  </style>
+</head>
+<body>
+  <h1>🔮 AI 사주풀이</h1>
+  <div class="form-box">
+    <label>양력/음력 선택:</label>
+    <select id="calendar">
+      <option value="양력">양력</option>
+      <option value="음력">음력</option>
+    </select>
+
+    <label>출생 날짜:</label>
+    <input type="date" id="birthDate">
+
+    <label>출생 시간:</label>
+    <input type="time" id="birthTime">
+
+    <label>성별:</label>
+    <select id="gender">
+      <option value="남자">남자</option>
+      <option value="여자">여자</option>
+    </select>
+
+    <label>윤달인가요?</label>
+    <select id="isLeapMonth">
+      <option value="아님">아님</option>
+      <option value="맞음">맞음</option>
+    </select>
+
+    <label>출생지 (선택):</label>
+    <input type="text" id="birthPlace" placeholder="예: 서울">
+
+    <button id="submitBtn">사주풀이 요청</button>
+    <div id="loading" class="loading">🔄 사주를 풀이 중입니다. 잠시만 기다려주세요...</div>
+  </div>
+
+  <div id="result" class="result-box" style="display: none;"></div>
+
+  <script>
+    const API_KEY = 'api 키 입력';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+    document.getElementById('submitBtn').addEventListener('click', () => {
+      const $mainBox = document.querySelector('.form-box');
+      const $loading = document.getElementById('loading');
+      const calendar = document.getElementById('calendar').value;
+      const birthDate = document.getElementById('birthDate').value;
+      const birthTime = document.getElementById('birthTime').value;
+      const gender = document.getElementById('gender').value;
+      const isLeap = document.getElementById('isLeapMonth').value;
+      const birthPlace = document.getElementById('birthPlace').value || '모름';
+
+      if (!birthDate || !birthTime) {
+        alert('출생 날짜와 시간을 모두 입력해주세요.');
+        return;
+      }
+
+      $loading.style.display = 'block';
+
+      const prompt = `
+      당신은 세계 최고의 사주풀이가입니다. 아래의 정보들을 활용해서 당신이 할 수 있는 한 최대한 재미있게 한국 명리학 사주풀이를 해주세요. 주요 운세(성격, 재물, 직업, 건강 등)를 중심으로 600자 내외로 정리해주세요.
+      응답은 반드시 아래에 명시된 JSON 형식에 맞춰서, 다른 부가 설명 없이 JSON 데이터만 반환해야 합니다.
+
+      [사용할 정보]
+      - 양력/음력: ${calendar}
+      - 출생일: ${birthDate}
+      - 출생시간: ${birthTime}
+      - 성별: ${gender}
+      - 윤달 여부: ${isLeap}
+      - 출생지: ${birthPlace}
+
+      [출력 JSON 형식]
+      {
+        "characterName": "사주풀이 결과와 비슷한 캐릭터 이름",
+        "introduction": "사주에 대한 한 줄 소개",
+        "information": [
+          "1. 성격",
+          "2. 재물",
+          "3. 직업",
+          "4. 건강",
+          "5. 총평"
+        ],
+      }
+      `;
+
+      const payload = {
+        contents: [
+          {
+            parts: [
+              { text: prompt }
+            ]
+          }
+        ]
+      };
+
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+        .then(res => res.json())
+        .then(data => {
+          $loading.style.display = 'none';
+          const raw = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+          try {
+            const clean = raw.replace(/```json|```/g, '').trim();
+            const json = JSON.parse(clean);
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+              <div class="character">${json.characterName}</div>
+              <div class="intro">${json.introduction}</div>
+              <ul class="info">
+                ${json.information.map(item => `<li>${item}</li>`).join('')}
+              </ul>
+              <button class="back-button" onclick="goBack()">처음으로</button>
+            `;
+            $mainBox.style.display = 'none';
+            resultDiv.style.display = 'block';
+          } catch (err) {
+            $loading.style.display = 'none';
+            document.getElementById('result').innerText = '❌ JSON 파싱 실패: ' + err.message + '\n' + raw;
+            document.getElementById('result').style.display = 'block';
+          }
+        })
+        .catch(err => {
+          $loading.style.display = 'none';
+          document.getElementById('result').innerText = '오류 발생: ' + err.message;
+          document.getElementById('result').style.display = 'block';
+        });
+    });
+
+    function goBack() {
+      document.querySelector('.form-box').style.display = 'block';
+      document.getElementById('result').style.display = 'none';
+      document.querySelectorAll('input').forEach(input => input.value = '');
+      document.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+    }
+  </script>
+</body>
+</html>
