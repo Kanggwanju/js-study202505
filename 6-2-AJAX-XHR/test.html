@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Title</title>
+</head>
+<body>
+
+
+
+  <script>
+    const API_KEY = 'api 키 입력';
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+
+    const xhr = new XMLHttpRequest();
+
+    const keywords = {
+      /*isSolar: true,
+      birthYear: null,
+      birthMonth: null,
+      birthDay: null,
+      birthHour: null,*/
+
+    };
+    // 1. 출생 연도
+    // 2. 출생 월
+    // 3. 출생 일
+    // 양력/음력
+    // 4. 출생 시 (시간)
+    // 윤달 여부
+    // 성별
+    // 출생지
+    // 양력 1999년 03월 18일 사시생 남자
+
+    const calendar = '양력';
+    const birthDate1 = '1999년 3월 18일';
+    const birthTime = '10시 30분';
+    const gender = '남성';
+    const isLeap = false;
+    const birthPlace = '경기도 안산';
+    const aiPrompt = `
+      나는 사용자의 사주풀이를 해줄 예정이고
+      사용자는 아래의 키워드들을 넣을 거야
+      이 키워드들로 사주풀이를 해주면 돼!
+      [사용할 정보]
+      - 양력/음력: ${calendar}
+      - 출생일: ${birthDate1}
+      - 출생시간: ${birthTime}
+      - 성별: ${gender}
+      - 윤달 여부: ${isLeap}
+      - 출생지: ${birthPlace}
+    `;
+
+
+    xhr.open('POST', url);
+
+    const payload = {
+      contents: [
+        {
+          parts: [
+            {
+              text: 'ai 에게 질문 할 text'
+            }
+          ]
+        }
+      ]
+    };
+
+    const reqData = JSON.stringify(payload);
+
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    xhr.send(reqData);
+
+    xhr.addEventListener('load', e => {
+      console.log(xhr.responseText);
+    });
+  </script>
+</body>
+</html>
