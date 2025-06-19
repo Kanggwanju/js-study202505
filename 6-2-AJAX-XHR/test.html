@@ -9,13 +9,13 @@
 </head>
 <body>
 
+  <button id="btn">버튼</button>
+  <div id="contents">내용</div>
 
 
   <script>
     const API_KEY = 'api 키 입력';
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
-
-    const xhr = new XMLHttpRequest();
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
     const keywords = {
       /*isSolar: true,
@@ -36,47 +36,89 @@
     // 양력 1999년 03월 18일 사시생 남자
 
     const calendar = '양력';
-    const birthDate1 = '1999년 3월 18일';
+    const birthDate = '1999년 3월 18일';
     const birthTime = '10시 30분';
     const gender = '남성';
     const isLeap = false;
     const birthPlace = '경기도 안산';
     const aiPrompt = `
-      나는 사용자의 사주풀이를 해줄 예정이고
-      사용자는 아래의 키워드들을 넣을 거야
-      이 키워드들로 사주풀이를 해주면 돼!
+      당신은 세계 최고의 사주풀이가입니다. 아래의 정보들을 활용해서 당신이 할 수 있는 한 최대한 재미있게 한국 명리학 사주풀이를 해주세요. 주요 운세(성격, 재물, 직업, 건강 등)를 중심으로 600자 내외로 정리해주세요.
+      응답은 반드시 아래에 명시된 JSON 형식에 맞춰서, 다른 부가 설명 없이 JSON 데이터만 반환해야 합니다.
+
       [사용할 정보]
       - 양력/음력: ${calendar}
-      - 출생일: ${birthDate1}
+      - 출생일: ${birthDate}
       - 출생시간: ${birthTime}
       - 성별: ${gender}
       - 윤달 여부: ${isLeap}
       - 출생지: ${birthPlace}
+
+      [출력 JSON 형식]
+      {
+        "characterName": "사주풀이 결과와 비슷한 캐릭터 이름",
+        "introduction": "사주에 대한 한 줄 소개",
+        "information": [
+          "1. 성격",
+          "2. 재물",
+          "3. 직업",
+          "4. 건강",
+          "5. 총평"
+        ],
+      }
     `;
 
+    function makeContent(data) {
+      const $content = document.getElementById('contents');
+      $content.textContent = data;
+      console.log(data);
+    }
 
-    xhr.open('POST', url);
+    function fetchGet(url, callback) {
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', url); // 요청 세팅
 
-    const payload = {
-      contents: [
-        {
-          parts: [
-            {
-              text: 'ai 에게 질문 할 text'
-            }
-          ]
-        }
-      ]
-    };
+      const payload = {
+        contents: [
+          {
+            parts: [
+              {
+                text: `${aiPrompt}`
+              }
+            ]
+          }
+        ]
+      };
 
-    const reqData = JSON.stringify(payload);
+      const reqData = JSON.stringify(payload);
 
-    xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.setRequestHeader('Content-Type', 'application/json');
 
-    xhr.send(reqData);
+      xhr.send(reqData);
 
-    xhr.addEventListener('load', e => {
-      console.log(xhr.responseText);
+      // 응답 데이터 가져오기
+      xhr.addEventListener('load', e => {
+        const responseData = JSON.parse(xhr.responseText);
+        console.log(responseData);
+        callback(responseData);
+      });
+    }
+
+    const $btn = document.getElementById('btn');
+
+
+    // ===== 이벤트 바인딩 ===== //
+    $btn.addEventListener('click', e => {
+      fetchGet(API_URL, (response) => {
+        // Gemini 응답의 텍스트 추출
+        const rawText = response.candidates[0].content.parts[0].text;
+
+        // JSON으로 파싱
+        const json = JSON.parse(rawText);
+        console.log(json);
+
+        // makeContent(response);
+
+      });
     });
   </script>
 </body>
