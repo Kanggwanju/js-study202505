@@ -477,6 +477,8 @@
     const $modalDetail = document.getElementById('modalDetails');
     const $modalTypes = document.getElementById('modalTypes');
     const $modalContent = document.getElementById('modal-content');
+    const $modalTitle = document.getElementById('modalTitle');
+
 
     const $doubleDamage = document.getElementById('doubleDamage');
     const $halfDamage = document.getElementById('halfDamage');
@@ -495,6 +497,9 @@
 
     function modalUI (e) {
       setTimeout(() => {
+        // 모달 이름 추가
+        $modalTitle.textContent = `${pokeInfo[e.target.dataset.pokeNumber].name}`;
+
         // 모달 키, 무게, 경험치 추가
         $modalDetail.textContent = `
           키: ${pokeInfo[e.target.dataset.pokeNumber].height} |
@@ -551,6 +556,7 @@
       // 포켓몬의 상세정보를 다시 서버에 재요청
       const res = await fetch(results[0].url);
       const x = await res.json();
+      console.log();
 
       // 포켓몬의 두배 데미지 받는 타입 서버에 재요청
       const damageRes = await fetch(x.types[0].type.url);
@@ -559,6 +565,7 @@
       // 포켓몬 정보 배열에 객체에 넣어주고 배열에 전역으로 저장
       const imgSrc = x.sprites.front_default;
       const otherInfo = {
+        name: x.name,
         height: x.height,
         weight: x.weight,
         experience: x.base_experience,
