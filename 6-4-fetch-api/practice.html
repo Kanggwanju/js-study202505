@@ -487,14 +487,56 @@
 
     // 시작 위치
     let offset = 0;
-    // 가져올 개수
-    let limit = 45;
-    // 로딩 중인지 상태 체크
-    let isLoading = false;
-    // 총 포켓몬 수
-    let pokeCount;
+
     // 포켓몬 정보
     const pokeInfo = [];
+
+
+    function modalUI (e) {
+      setTimeout(() => {
+        // 모달 키, 무게, 경험치 추가
+        $modalDetail.textContent = `
+          키: ${pokeInfo[e.target.dataset.pokeNumber].height} |
+          무게: ${pokeInfo[e.target.dataset.pokeNumber].weight} |
+          경험치: ${pokeInfo[e.target.dataset.pokeNumber].experience}
+          `;
+
+        // 모달 이미지 추가
+        $modalImage.setAttribute('src', `${pokeInfo[e.target.dataset.pokeNumber].img}`);
+
+        // 모달 타입 추가
+        for (const typeOfPoke of pokeInfo[e.target.dataset.pokeNumber].types) {
+          const $newLi = document.createElement('li');
+          const $newImg = document.createElement('img');
+          for (let i = 0; i < typeImages.length; i++) {
+            if (typeImages[i].name === typeOfPoke.type.name) {
+              $newImg.setAttribute('alt', `${typeImages[i].name}`);
+              $newImg.setAttribute('src', `${typeImages[i].url}`);
+            }
+          }
+
+          $newLi.append($newImg);
+          $modalTypes.append($newLi);
+        }
+
+        // 모달 더블 데미지 타입 추가
+        for (const doubleOfPoke of pokeInfo[e.target.dataset.pokeNumber].doubleDamage) {
+          const $newLi = document.createElement('li');
+          const $newImg = document.createElement('img');
+          for (let i = 0; i < typeImages.length; i++) {
+            if (typeImages[i].name === doubleOfPoke.name) {
+              $newImg.setAttribute('alt', `${typeImages[i].name}`);
+              $newImg.setAttribute('src', `${typeImages[i].url}`);
+            }
+          }
+          $newLi.append($newImg);
+          $doubleDamage.append($newLi);
+        }
+
+        document.getElementById('modal-skeleton').style.display = 'none'
+        $modalContent.style.display = 'flex';
+      }, 1000);
+    }
 
 
     // 옵저버가 감시대상을 감시했을 때 새 컨텐츠를 불러오는 함수
@@ -504,12 +546,16 @@
 
       const response = await fetch(`${pokeUrl}?offset=${offset}&limit=${1}`);
       const { results } = await response.json(); // 객체 배열이 된다.
-      // console.log(offset);
 
       // 포켓몬의 상세정보를 다시 서버에 재요청
       const res = await fetch(results[0].url);
       const x = await res.json();
-      // console.log(x);
+
+      // 포켓몬의 두배 데미지 받는 타입 서버에 재요청
+      const damageRes = await fetch(x.types[0].type.url);
+      const z = await damageRes.json();
+
+      // 포켓몬 정보 배열에 객체에 넣어주고 배열에 전역으로 저장
       const imgSrc = x.sprites.front_default;
       const otherInfo = {
         height: x.height,
@@ -517,6 +563,7 @@
         experience: x.base_experience,
         types: x.types,
         img: x.sprites.front_default,
+        doubleDamage: z.damage_relations.double_damage_from
       };
       pokeInfo.push(otherInfo);
 
@@ -574,39 +621,8 @@
       $modalContent.style.display = 'none';
       document.getElementById('modal-skeleton').style.display = 'flex';
 
-
-      setTimeout(() => {
-        // 모달 키, 무게, 경험치 추가
-        $modalDetail.textContent = `
-          키: ${pokeInfo[e.target.dataset.pokeNumber].height} |
-          무게: ${pokeInfo[e.target.dataset.pokeNumber].weight} |
-          경험치: ${pokeInfo[e.target.dataset.pokeNumber].experience}
-          `;
-
-        // 모달 이미지 추가
-        $modalImage.setAttribute('src', `${pokeInfo[e.target.dataset.pokeNumber].img}`);
-
-        // 모달 타입 추가
-        for (const typeOfPoke of pokeInfo[e.target.dataset.pokeNumber].types) {
-          const $newLi = document.createElement('li');
-          const $newImg = document.createElement('img');
-          for (let i = 0; i < typeImages.length; i++) {
-            if (typeImages[i].name === typeOfPoke.type.name) {
-              $newImg.setAttribute('alt', `${typeImages[i].name}`);
-              $newImg.setAttribute('src', `${typeImages[i].url}`)
-            }
-          }
-
-          $newLi.append($newImg);
-          $modalTypes.append($newLi);
-        }
-
-        document.getElementById('modal-skeleton').style.display = 'none'
-        $modalContent.style.display = 'flex';
-
-      }, 1000);
-
-
+      // 모달 UI 함수
+      modalUI(e);
     });
 
     $modalCloseBtn.addEventListener('click', e => {
@@ -614,8 +630,6 @@
       $modal.style.display = 'none';
       $modalTypes.innerHTML = '';
     });
-
-
 
   </script>
 </body>
