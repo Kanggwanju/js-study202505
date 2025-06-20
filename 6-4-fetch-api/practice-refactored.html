@@ -511,25 +511,52 @@
     let pokeCount;
     let isLoading = false;
 
+    // 모달 여는 함수
+    function openModal() {
+      // 뒷배경 스크롤 방지
+      document.body.style.overflow = 'hidden';
+      $modal.style.display = 'flex';
+      $overlay.style.display = 'block';
+    }
+
+    // 모달 닫는 함수
+    function closeModal() {
+      document.body.style.overflow = '';
+      $modal.style.display = 'none';
+      $overlay.style.display = 'none';
+    }
+
+
     async function getPokemon() {
       if (isLoading) return;
       isLoading = true;
       $loading.style.opacity = '1';
 
       try {
+        // 비동기로 1초간 정지
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         const res = await fetch(`${pokeUrl}?offset=${offset}&limit=${limit}`);
         const { results, count } = await res.json();
         pokeCount = count;
 
-        const pokemonDataList = [];
+        // json결과가 들어있는 프로미스 배열을 생성
+        const pokemonPromises
+          = results.map(pokemon => fetch(pokemon.url).then(res => res.json()));
+
+        // Promise.all -> 모든 프로미스를 병렬로 처리
+        const pokemonDataList = await Promise.all(pokemonPromises);
+
+        /*const pokemonDataList = [];
         for (const pokemon of results) {
+          // 서버에 각 포켓몬 정보를 일일히 반복 요청
           const detailRes = await fetch(pokemon.url);
           const pokemonData = await detailRes.json();
+          // 렌더링 안하고 그 데이터를 배열에 넣고 있음
           pokemonDataList.push(pokemonData);
-        }
+        }*/
 
+        // 렌더링
         pokemonDataList.forEach((pokemonData) => {
           const imgSrc = pokemonData.sprites.front_default;
 
@@ -542,17 +569,76 @@
           $pokeContainer.append($div);
         });
 
-
       } catch (error) {
         console.error('포켓몬 데이터를 가져오는 데 실패했습니다.', error);
-        $pokeContainer.innerHTML +=
-          '<p>데이터를 불러오는 데 실패했습니다.</p>';
+        $pokeContainer.innerHTML += '<p>데이터를 불러오는 데 실패했습니다.</p>';
       } finally {
         isLoading = false;
         $loading.style.opacity = '0';
       }
     }
 
+
+    // ==== 이벤트 바인딩 ==== //
+    // 모달 닫기 이벤트
+    $modalCloseBtn.addEventListener('click', closeModal);
+    $overlay.addEventListener('click', closeModal);
+
+    // 모달 열기 이벤트
+    $pokeContainer.addEventListener('click', async (e) => {
+
+      const $pokeDiv = e.target.closest('.pokemon');
+
+      if (!$pokeDiv) return;
+
+      // 명시적으로 스켈레톤을 띄우고 컨텐츠를 숨기는 코드
+      $modalContent.style.display = 'none';
+      $modalSkeleton.style.display = 'flex';
+
+      // 모달 열어주기
+      openModal();
+
+      // 지금 클릭대상의 포켓몬정보를 불러와야 함!
+      // 지금 클릭대상 포켓몬이 누구?
+      console.log($pokeDiv.querySelector('img').src);
+
+      $modalImage.src = $pokeDiv.querySelector('img').src;
+
+      // 강제로딩 0.5초 삽입
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      // 스켈레톤을 숨기고 컨텐츠 오픈
+      $modalContent.style.display = 'flex';
+      $modalSkeleton.style.display = 'none';
+    });
+
+
+    // ====  옵저버 세팅 ==== //
+
+    // 무한스크롤 옵저버 구현
+    const observer = new IntersectionObserver((entries) => {
+      // console.log(entries);
+
+      // 감시대상에 화면에 보일 때
+      if (entries[0].isIntersecting && !isLoading) {
+        offset += limit;
+        if (offset > pokeCount) {
+          // 감시 해제
+          observer.unobserve($loading);
+          $loading.innerHTML = '<p>모든 포켓몬을 다 봤어요!</p>';
+          return;
+        }
+        // 새로운 포켓몬정보 서버요청
+        getPokemon();
+      }
+    }, {
+      threshold: 0.8,  // 감시대상이 80%정도만 보여도 콜백실행
+    });
+
+    // 감시대상 감시 명령
+    observer.observe($loading);
+
+    // ==== 실행 코드 ==== //
     getPokemon();
   </script>
 </body>
