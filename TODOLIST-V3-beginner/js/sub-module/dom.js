@@ -6,6 +6,7 @@ const $todoList = document.getElementById('todo-list');
 const $todosLeftCount = document.getElementById('todos-left-count');
 const $filters = document.querySelector('.filters');
 const $clearCompletedBtn = document.getElementById('clear-completed');
+const $toggleAllBtn = document.getElementById('toggle-all-button');
 
 export default {
   $todoForm,
@@ -14,4 +15,5 @@ export default {
   $todosLeftCount,
   $filters,
   $clearCompletedBtn,
+  $toggleAllBtn,
 };
