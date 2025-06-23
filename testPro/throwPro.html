@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>세로 게이지 (자동 감소)</title>
+  <style>
+      body {
+          font-family: 'Arial', sans-serif;
+          text-align: center;
+          padding-top: 50px;
+      }
+
+      .gauge-container {
+          width: 60px;
+          height: 300px;
+          border: 2px solid #333;
+          margin: 0 auto 20px;
+          border-radius: 10px;
+          background-color: #f1f1f1;
+          position: relative;
+          overflow: hidden;
+      }
+
+
+      .gauge-bar {
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 20%;
+          background-color: #4caf50;
+          transition: height 0.3s ease;
+      }
+
+      .btn {
+          padding: 10px 20px;
+          font-size: 16px;
+          background-color: #2196f3;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+      }
+
+      .btn:disabled {
+          background-color: #aaa;
+          cursor: not-allowed;
+      }
+
+      .message {
+          margin-top: 20px;
+          font-size: 18px;
+      }
+
+  </style>
+</head>
+<body>
+
+  <h2>🔼 세로 게이지를 채워보세요!</h2>
+
+  <div class="message" id="scoreDisplay">점수: 0점</div>
+
+  <div class="gauge-container">
+    <div class="gauge-bar" id="gaugeBar"></div>
+  </div>
+
+  <button class="btn" id="clickBtn">클릭!</button>
+  <div class="message" id="message"></div>
+
+  <script>
+    const gaugeBar = document.getElementById('gaugeBar');
+    const message = document.getElementById('message');
+    const clickBtn = document.getElementById('clickBtn');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    let score = 0; // 초기 점수
+
+    let currentPercent = 20; // 초기값 20%
+    gaugeBar.style.height = `${currentPercent}%`;
+    updateGaugeColor(); // 색상 업데이트
+
+    let expectedClick = 0; // 0: 좌클릭, 2: 우클릭
+
+    function updateGaugeColor() {
+      if (currentPercent >= 90) {
+        gaugeBar.style.backgroundColor = '#f44336'; // 빨강
+      } else if (currentPercent <= 70) {
+        gaugeBar.style.backgroundColor = '#ffeb3b'; // 노랑
+      } else {
+        gaugeBar.style.backgroundColor = '#4caf50'; // 초록 (기본)
+      }
+    }
+
+    // 좌/우 클릭 번갈아가며 게이지 증가
+    clickBtn.addEventListener('mousedown', (e) => {
+      e.preventDefault(); // 기본 동작 방지 (특히 우클릭 메뉴)
+
+      // 클릭 순서가 맞을 때만 진행
+      if (e.button === expectedClick && currentPercent < 100) {
+        currentPercent += 2;
+        if (currentPercent > 100) currentPercent = 100;
+        gaugeBar.style.height = `${currentPercent}%`;
+        updateGaugeColor(); // 색상 업데이트
+
+        // 다음에 눌러야 할 클릭 반전
+        expectedClick = expectedClick === 0 ? 2 : 0;
+
+        // 메시지 업데이트
+        message.textContent = '';
+        if (currentPercent === 100) {
+          message.textContent = '🎉 게이지가 가득 찼어요!';
+        }
+      }
+    });
+
+    // 우클릭 메뉴 막기
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    // 일정 시간마다 5%씩 감소 (0.5초마다)
+    setInterval(() => {
+      if (currentPercent > 0 && currentPercent < 100) {
+        currentPercent -= 10;
+        if (currentPercent < 0) currentPercent = 0;
+        gaugeBar.style.height = `${currentPercent}%`;
+        updateGaugeColor(); // 색상 업데이트
+        message.textContent = '';
+      }
+    }, 2000);
+
+    // 70~90% 사이에 3초 이상 유지하면 성공
+    let successCheckCount = 0;
+    let successTriggered = false;
+
+    setInterval(() => {
+      if (currentPercent >= 70 && currentPercent <= 90) {
+        successCheckCount++;
+        if (successCheckCount >= 6 && !successTriggered) {
+          score += 30;
+          scoreDisplay.textContent = `점수: ${score}점`;
+          successTriggered = true;
+        }
+      } else {
+        successCheckCount = 0;
+        successTriggered = false;
+      }
+    }, 500); // 0.5초마다 체크
+  </script>
+
+</body>
+</html>
