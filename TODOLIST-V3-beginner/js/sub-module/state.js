@@ -7,7 +7,6 @@ import {render} from './render.js';
 // 꽁꽁 숨겨야 하는 원본
 const state = loadState();
 
-
 // ======== 핵심 로직 함수 정의 ========= //
 
 /**
@@ -79,5 +78,13 @@ export function toggleTodo(targetId) {
 
 export function filterTodos(buttonId) {
   getState().currentFilter = buttonId.substring(buttonId.indexOf('-') + 1);
+  render(getState()); // 바뀐 상태에 맞게 리렌더링 명령
+}
+
+export function toggleAlltodos(complete) {
+  getState().todos = getState().todos.forEach(todo => {
+    todo.completed = complete;
+  });
+
   render(getState()); // 바뀐 상태에 맞게 리렌더링 명령
 }

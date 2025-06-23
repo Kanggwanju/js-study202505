@@ -1,5 +1,5 @@
 import elements from './dom.js';
-import {addTodo, clearCompletedTodos, deleteTodo, filterTodos, getState, toggleTodo} from './state.js';
+import {addTodo, clearCompletedTodos, deleteTodo, filterTodos, getState, toggleTodo, toggleAlltodos} from './state.js';
 import {render} from './render.js';
 
 // 모든 이벤트들을 등록해주는 함수 (비공개)
@@ -12,6 +12,7 @@ function bindEvents() {
     $todoList,
     $todoInput,
     $todoForm,
+    $toggleAllBtn,
   } = elements;
 
   // ======== 이벤트 리스너 설정 ========== //
@@ -35,7 +36,6 @@ function bindEvents() {
   // 새 할 일을 추가하는 이벤트
   $todoForm.addEventListener('submit', e => {
     e.preventDefault();
-    console.log(111);
     const newTodoText = $todoInput.value.trim();
 
     // 실제로 상태 배열에 입력된 데이터 추가
@@ -62,7 +62,21 @@ function bindEvents() {
       toggleTodo(todoId);
     }
   });
+
+
+  $toggleAllBtn.addEventListener('click', e => {
+    const toggleBtn = e.target.closest('#toggle-all-button');
+    toggleBtn.classList.toggle('all-completed');
+
+    if (toggleBtn.classList.contains('all-completed')) {
+      toggleAlltodos(true);
+    } else {
+      toggleAlltodos(false);
+    }
+  });
 }
+
+
 
 
 // 앱을 시작하는 함수
