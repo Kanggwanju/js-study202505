@@ -24,6 +24,22 @@
           overflow: hidden;
       }
 
+      .guide-line {
+          position: absolute;
+          width: 100%;
+          height: 2px;
+          background-color: rgba(0, 0, 0, 0.5);
+          left: 0;
+          z-index: 2; /* 게이지 바보다 위에 있도록 설정 */
+      }
+
+      .guide-70 {
+          bottom: 70%;
+      }
+
+      .guide-90 {
+          bottom: 90%;
+      }
 
       .gauge-bar {
           position: absolute;
@@ -32,6 +48,7 @@
           height: 20%;
           background-color: #4caf50;
           transition: height 0.3s ease;
+          z-index: 1; /* 가이드 라인보다 아래 */
       }
 
       .btn {
@@ -63,6 +80,8 @@
   <div class="message" id="scoreDisplay">점수: 0점</div>
 
   <div class="gauge-container">
+    <div class="guide-line guide-70"></div>
+    <div class="guide-line guide-90"></div>
     <div class="gauge-bar" id="gaugeBar"></div>
   </div>
 
@@ -76,16 +95,16 @@
     const scoreDisplay = document.getElementById('scoreDisplay');
     let score = 0; // 초기 점수
 
-    let currentPercent = 20; // 초기값 20%
+    let currentPercent = 70; // 초기값 20%
     gaugeBar.style.height = `${currentPercent}%`;
     updateGaugeColor(); // 색상 업데이트
 
     let expectedClick = 0; // 0: 좌클릭, 2: 우클릭
 
     function updateGaugeColor() {
-      if (currentPercent >= 90) {
+      if (currentPercent > 90) {
         gaugeBar.style.backgroundColor = '#f44336'; // 빨강
-      } else if (currentPercent <= 70) {
+      } else if (currentPercent < 70) {
         gaugeBar.style.backgroundColor = '#ffeb3b'; // 노랑
       } else {
         gaugeBar.style.backgroundColor = '#4caf50'; // 초록 (기본)
@@ -98,7 +117,7 @@
 
       // 클릭 순서가 맞을 때만 진행
       if (e.button === expectedClick && currentPercent < 100) {
-        currentPercent += 2;
+        currentPercent += 10;
         if (currentPercent > 100) currentPercent = 100;
         gaugeBar.style.height = `${currentPercent}%`;
         updateGaugeColor(); // 색상 업데이트
@@ -120,7 +139,7 @@
     // 일정 시간마다 5%씩 감소 (0.5초마다)
     setInterval(() => {
       if (currentPercent > 0 && currentPercent < 100) {
-        currentPercent -= 10;
+        currentPercent -= 5;
         if (currentPercent < 0) currentPercent = 0;
         gaugeBar.style.height = `${currentPercent}%`;
         updateGaugeColor(); // 색상 업데이트
@@ -135,14 +154,19 @@
     setInterval(() => {
       if (currentPercent >= 70 && currentPercent <= 90) {
         successCheckCount++;
-        if (successCheckCount >= 6 && !successTriggered) {
+        console.log(`카운트: ${successCheckCount}`);
+        if (successCheckCount === 6) {
+        // if (successCheckCount === 6 && !successTriggered) {
           score += 30;
+          successCheckCount = 0;
+          console.log('30점 추가');
           scoreDisplay.textContent = `점수: ${score}점`;
-          successTriggered = true;
+          // successTriggered = true;
         }
       } else {
         successCheckCount = 0;
-        successTriggered = false;
+        console.log('카운트 0이 됐음.');
+        // successTriggered = false;
       }
     }, 500); // 0.5초마다 체크
   </script>
