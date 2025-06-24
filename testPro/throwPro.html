@@ -13,6 +13,17 @@
           padding-top: 50px;
       }
 
+      /* 모달 열기 버튼 스타일 */
+      #openModalBtn {
+          padding: 10px 20px;
+          font-size: 16px;
+          background-color: #2196f3;
+          color: white;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+      }
+
       .gauge-container {
           width: 60px;
           height: 300px;
@@ -71,36 +82,62 @@
           font-size: 18px;
       }
 
+      .visible-modal {
+          display: block;
+      }
+      .hide-modal {
+          display: none;
+      }
+
   </style>
 </head>
 <body>
 
-  <h2>🔼 세로 게이지를 채워보세요!</h2>
+  <!-- 모달 열기 버튼 -->
+  <button id="openModalBtn">낚시 시작하기</button>
+  <div id="modal-content">
+    <div class="message" id="scoreDisplay">점수: 0점</div>
 
-  <div class="message" id="scoreDisplay">점수: 0점</div>
+    <div class="gauge-container">
+      <div class="guide-line guide-70"></div>
+      <div class="guide-line guide-90"></div>
+      <div class="gauge-bar" id="gaugeBar"></div>
+    </div>
 
-  <div class="gauge-container">
-    <div class="guide-line guide-70"></div>
-    <div class="guide-line guide-90"></div>
-    <div class="gauge-bar" id="gaugeBar"></div>
+    <button class="btn" id="clickBtn">클릭!</button>
+    <div class="message" id="message"></div>
   </div>
-
-  <button class="btn" id="clickBtn">클릭!</button>
-  <div class="message" id="message"></div>
-
   <script>
+
+    // ======= DOM 가져오기 ======== //
     const gaugeBar = document.getElementById('gaugeBar');
     const message = document.getElementById('message');
     const clickBtn = document.getElementById('clickBtn');
     const scoreDisplay = document.getElementById('scoreDisplay');
+    const openModalBtn = document.getElementById('openModalBtn');
+    const modalGameContents = document.getElementById('modal-content');
+
+
+    // ======== 상태관리 변수 및 상수 ======== //
     let score = 0; // 초기 점수
 
     let currentPercent = 70; // 초기값 20%
     gaugeBar.style.height = `${currentPercent}%`;
-    updateGaugeColor(); // 색상 업데이트
+    let decreaseTimerId = null;
+    let checkCountTimerId = null;
 
-    let expectedClick = 0; // 0: 좌클릭, 2: 우클릭
+    // ======== 핵심 로직 함수 정의 ========= //
 
+
+    function updateModalUI() {
+
+      updateGaugeColor(); // 색상 업데이트
+    }
+
+
+    /**
+     * @description 현재 게이지에 따라 bar의 색을 바꿔주는 함수
+     */
     function updateGaugeColor() {
       if (currentPercent > 90) {
         gaugeBar.style.backgroundColor = '#f44336'; // 빨강
@@ -110,6 +147,29 @@
         gaugeBar.style.backgroundColor = '#4caf50'; // 초록 (기본)
       }
     }
+
+
+    // ======== 실행 코드 ========== //
+    updateModalUI();
+
+
+
+
+
+
+
+    // 게임 모달 열기
+    openModalBtn.addEventListener('click', e => {
+      const isNowHidden = modalGameContents.classList.toggle('hide-modal');
+      if (isNowHidden) {
+        clearInterval(decreaseTimerId);
+        clearInterval(checkCountTimerId);
+        decreaseTimerId = null;
+        checkCountTimerId = null;
+      } else {
+
+      }
+    });
 
     // 좌/우 클릭 번갈아가며 게이지 증가
     clickBtn.addEventListener('mousedown', (e) => {
@@ -128,7 +188,7 @@
         // 메시지 업데이트
         message.textContent = '';
         if (currentPercent === 100) {
-          message.textContent = '🎉 게이지가 가득 찼어요!';
+          message.textContent = '물고기가 도망갔어요!';
         }
       }
     });
@@ -136,22 +196,38 @@
     // 우클릭 메뉴 막기
     document.addEventListener('contextmenu', (e) => e.preventDefault());
 
-    // 일정 시간마다 5%씩 감소 (0.5초마다)
-    setInterval(() => {
+    // 일정 시간마다 5%씩 감소 (1초마다)
+    decreaseTimerId = setInterval(() => {
       if (currentPercent > 0 && currentPercent < 100) {
-        currentPercent -= 5;
+        currentPercent -= 10;
         if (currentPercent < 0) currentPercent = 0;
         gaugeBar.style.height = `${currentPercent}%`;
         updateGaugeColor(); // 색상 업데이트
         message.textContent = '';
       }
-    }, 2000);
+    }, 1000);
 
     // 70~90% 사이에 3초 이상 유지하면 성공
     let successCheckCount = 0;
     let successTriggered = false;
 
-    setInterval(() => {
+
+
+
+    // 5초 후 게임 종료
+    setTimeout(() => {
+      // 감소 타이머 멈춤
+      clearInterval(decreaseTimerId);
+
+      // 현재 게이지가 70 이상 90 이하 = 성공
+      if (currentPercent >= 70 && currentPercent <= 90) {
+        score += 30;
+      }
+    }, 5000);
+
+
+
+    checkCountTimerId = setInterval(() => {
       if (currentPercent >= 70 && currentPercent <= 90) {
         successCheckCount++;
         console.log(`카운트: ${successCheckCount}`);
